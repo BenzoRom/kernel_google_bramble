@@ -324,19 +324,20 @@ struct arm64_cpu_capabilities {
 			bool sign;
 			unsigned long hwcap;
 		};
-		/*
-		 * A list of "matches/cpu_enable" pair for the same
-		 * "capability" of the same "type" as described by the parent.
-		 * Only matches(), cpu_enable() and fields relevant to these
-		 * methods are significant in the list. The cpu_enable is
-		 * invoked only if the corresponding entry "matches()".
-		 * However, if a cpu_enable() method is associated
-		 * with multiple matches(), care should be taken that either
-		 * the match criteria are mutually exclusive, or that the
-		 * method is robust against being called multiple times.
-		 */
-		const struct arm64_cpu_capabilities *match_list;
 	};
+
+	/*
+	 * An optional list of "matches/cpu_enable" pair for the same
+	 * "capability" of the same "type" as described by the parent.
+	 * Only matches(), cpu_enable() and fields relevant to these
+	 * methods are significant in the list. The cpu_enable is
+	 * invoked only if the corresponding entry "matches()".
+	 * However, if a cpu_enable() method is associated
+	 * with multiple matches(), care should be taken that either
+	 * the match criteria are mutually exclusive, or that the
+	 * method is robust against being called multiple times.
+	 */
+	const struct arm64_cpu_capabilities *match_list;
 };
 
 static inline int cpucap_default_scope(const struct arm64_cpu_capabilities *cap)
@@ -356,9 +357,30 @@ cpucap_late_cpu_permitted(const struct arm64_cpu_capabilities *cap)
 	return !!(cap->type & ARM64_CPUCAP_PERMITTED_FOR_LATE_CPU);
 }
 
+/*
+ * Generic helper for handling capabilties with multiple (match,enable) pairs
+ * of call backs, sharing the same capability bit.
+ * Iterate over each entry to see if at least one matches.
+ */
+static inline bool
+cpucap_multi_entry_cap_matches(const struct arm64_cpu_capabilities *entry,
+			       int scope)
+{
+	const struct arm64_cpu_capabilities *caps;
+
+	for (caps = entry->match_list; caps->matches; caps++)
+		if (caps->matches(caps, scope))
+			return true;
+
+	return false;
+}
+
 extern DECLARE_BITMAP(cpu_hwcaps, ARM64_NCAPS);
 extern struct static_key_false cpu_hwcap_keys[ARM64_NCAPS];
 extern struct static_key_false arm64_const_caps_ready;
+
+#define for_each_available_cap(cap)		\
+	for_each_set_bit(cap, cpu_hwcaps, ARM64_NCAPS)
 
 bool this_cpu_has_cap(unsigned int cap);
 
@@ -368,7 +390,7 @@ static inline bool cpu_have_feature(unsigned int num)
 }
 
 /* System capability check for constant caps */
-static inline bool __cpus_have_const_cap(int num)
+static __always_inline bool __cpus_have_const_cap(int num)
 {
 	if (num >= ARM64_NCAPS)
 		return false;
@@ -382,7 +404,7 @@ static inline bool cpus_have_cap(unsigned int num)
 	return test_bit(num, cpu_hwcaps);
 }
 
-static inline bool cpus_have_const_cap(int num)
+static __always_inline bool cpus_have_const_cap(int num)
 {
 	if (static_branch_likely(&arm64_const_caps_ready))
 		return __cpus_have_const_cap(num);
@@ -476,7 +498,6 @@ static inline bool id_aa64pfr0_sve(u64 pfr0)
 void __init setup_cpu_features(void);
 void check_local_cpu_capabilities(void);
 
-
 u64 read_sanitised_ftr_reg(u32 id);
 
 static inline bool cpu_supports_mixed_endian_el0(void)
@@ -514,6 +535,11 @@ static inline bool system_supports_sve(void)
 static inline bool system_supports_cnp(void)
 {
 	return false;
+}
+
+static inline bool system_capabilities_finalized(void)
+{
+	return static_branch_likely(&arm64_const_caps_ready);
 }
 
 #define ARM64_SSBD_UNKNOWN		-1
