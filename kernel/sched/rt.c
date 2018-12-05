@@ -1578,8 +1578,8 @@ select_task_rq_rt(struct task_struct *p, int cpu, int sd_flag, int flags,
 	 */
 	may_not_preempt = task_may_not_preempt(curr, cpu);
 
-	test = static_branch_unlikely(&sched_energy_present) ||
-	       may_not_preempt || (curr && unlikely(rt_task(curr)) &&
+	test = sched_energy_enabled() || may_not_preempt ||
+	       (curr && unlikely(rt_task(curr)) &&
 	       (curr->nr_cpus_allowed < 2 || curr->prio <= p->prio));
 
 	if (test || !rt_task_fits_capacity(p, cpu)) {
@@ -1938,7 +1938,7 @@ static int find_lowest_rq(struct task_struct *task)
 	if (!ret)
 		return -1; /* No targets found */
 
-	if (static_branch_unlikely(&sched_energy_present))
+	if (sched_energy_enabled())
 		cpu = rt_energy_aware_wake_cpu(task);
 
 	if (cpu == -1)
