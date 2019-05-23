@@ -696,18 +696,6 @@ static const struct midr_range arm64_workaround_858921_cpus[] = {
 
 #endif
 
-#ifdef CONFIG_ARM64_ERRATUM_1188873
-
-static const struct midr_range arm64_workaround_1188873_cpus[] = {
-	/* Cortex-A76 r0p0 to r2p0 */
-	MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 2, 0),
-	/* Kryo-4G r15p14 */
-	MIDR_RANGE(MIDR_KRYO4G, 15, 14, 15, 14),
-	{},
-};
-
-#endif
-
 #ifdef CONFIG_ARM64_ERRATUM_845719
 
 static const struct midr_range arm64_workaround_845719_cpus[] = {
@@ -718,6 +706,20 @@ static const struct midr_range arm64_workaround_845719_cpus[] = {
 	{},
 };
 
+#endif
+
+#ifdef CONFIG_ARM64_ERRATUM_1418040
+/*
+ * - 1188873 affects r0p0 to r2p0
+ * - 1418040 affects r0p0 to r3p1
+ */
+static const struct midr_range erratum_1418040_list[] = {
+	/* Cortex-A76 r0p0 to r3p1 */
+	MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 1),
+	/* Kryo-4G r15p14 */
+	MIDR_RANGE(MIDR_KRYO4G, 15, 14, 15, 14),
+	{},
+};
 #endif
 
 const struct arm64_cpu_capabilities arm64_errata[] = {
@@ -886,11 +888,11 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 		.matches = has_ssbd_mitigation,
 		.midr_range_list = arm64_ssb_cpus,
 	},
-#ifdef CONFIG_ARM64_ERRATUM_1188873
+#ifdef CONFIG_ARM64_ERRATUM_1418040
 	{
-		.desc = "ARM erratum 1188873",
-		.capability = ARM64_WORKAROUND_1188873,
-		ERRATA_MIDR_RANGE_LIST(arm64_workaround_1188873_cpus),
+		.desc = "ARM erratum 1418040",
+		.capability = ARM64_WORKAROUND_1418040,
+		ERRATA_MIDR_RANGE_LIST(erratum_1418040_list),
 	},
 #endif
 #ifdef CONFIG_ARM64_ERRATUM_1463225
