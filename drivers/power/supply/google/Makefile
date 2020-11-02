@@ -1,3 +1,5 @@
+ccflags-$(CONFIG_CHARGER_P9221) += -Wno-vla-extension
+
 obj-$(CONFIG_GOOGLE_BMS)	+= google-bms.o
 google-bms-objs += gbms_storage.o gvotable.o google_bms.o
 obj-$(CONFIG_GOOGLE_BMS_SM7250)	+= sm7250_bms.o
