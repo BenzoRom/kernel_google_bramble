@@ -7404,7 +7404,8 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
 
 		if (sysctl_sched_sync_hint_enable && sync && _cpus_allowed &&
 		    cpu_rq(cpu)->nr_running == 1 &&
-		    cpu_is_in_target_set(p, cpu)) {
+		    cpu_is_in_target_set(p, cpu) &&
+		    task_fits_capacity(p, capacity_of(cpu), cpu)) {
 			return cpu;
 		}
 
