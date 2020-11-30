@@ -24,6 +24,9 @@
 #include <linux/slab.h>
 #include <linux/syscore_ops.h>
 #include <linux/miscdevice.h>
+#if !IS_ENABLED(CONFIG_MEMCG)
+#include <linux/vmalloc.h>
+#endif
 
 #define LOG_BUFFER_ENTRIES      1024
 #define LOG_BUFFER_ENTRY_SIZE   256
