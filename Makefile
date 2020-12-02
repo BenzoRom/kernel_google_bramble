@@ -840,7 +840,14 @@ endif
 ifdef CONFIG_LTO_CLANG
 ifdef CONFIG_THINLTO
 lto-clang-flags	:= -flto=thin
-KBUILD_LDFLAGS	+= --thinlto-cache-dir=.thinlto-cache
+ifdef KERNEL_THINLTO_CACHE_PATH
+lto-cache-path  := $(KERNEL_THINLTO_CACHE_PATH)
+else
+lto-cache-path  := .thinlto-cache
+endif
+lto-cache-flags := --thinlto-cache-dir=$(lto-cache-path)
+lto-cache-flags += --thinlto-cache-policy=cache_size=5%:cache_size_bytes=5g
+KBUILD_LDFLAGS  +=  $(lto-cache-flags)
 else
 lto-clang-flags	:= -flto
 endif
