@@ -111,6 +111,7 @@ SCHED_FEAT(EAS_PREFER_IDLE, true)
  */
 SCHED_FEAT(SUGOV_RT_MAX_FREQ, false)
 
+#ifdef CONFIG_SCHED_TUNE
 /*
  * Apply schedtune boost hold to tasks of all sched classes.
  * If enabled, schedtune will hold the boost applied to a CPU
@@ -121,3 +122,4 @@ SCHED_FEAT(SUGOV_RT_MAX_FREQ, false)
  * RT class.
  */
 SCHED_FEAT(SCHEDTUNE_BOOST_HOLD_ALL, false)
+#endif
