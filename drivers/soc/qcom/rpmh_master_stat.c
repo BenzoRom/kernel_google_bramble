@@ -109,7 +109,7 @@ static ssize_t msm_rpmh_master_stats_print_data(char *prvbuf, ssize_t length,
 	 */
 	if (record->last_entered > record->last_exited)
 		accumulated_duration +=
-				(arch_counter_get_cntvct()
+				(arch_timer_read_counter()
 				- record->last_entered);
 
 	return scnprintf(prvbuf, length, "%s\n\tVersion:0x%x\n"
@@ -144,7 +144,7 @@ void msm_rpmh_master_stats_dump(void)
 
 	if (record->last_entered > record->last_exited) {
 		temp_sleep_time +=
-			(arch_counter_get_cntvct()
+			(arch_timer_read_counter()
 			- record->last_entered);
 	}
 
@@ -161,7 +161,7 @@ void msm_rpmh_master_stats_dump(void)
 
 			if (record->last_entered > record->last_exited) {
 				temp_sleep_time +=
-					(arch_counter_get_cntvct()
+					(arch_timer_read_counter()
 					- record->last_entered);
 			}
 
