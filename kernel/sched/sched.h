@@ -87,12 +87,8 @@
 struct rq;
 struct cpuidle_state;
 
-#define CPU_NR		8
-
-#define TASK_BITS (PID_MAX_DEFAULT + BITS_PER_LONG)
-
-extern unsigned int sched_capacity_margin_up[CPU_NR];
-extern unsigned int sched_capacity_margin_down[CPU_NR];
+extern unsigned int sched_capacity_margin_up[NR_CPUS];
+extern unsigned int sched_capacity_margin_down[NR_CPUS];
 
 /* task_struct::on_rq states: */
 #define TASK_ON_RQ_QUEUED	1
