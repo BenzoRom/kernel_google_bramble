@@ -9,7 +9,7 @@ ARCH_REL_TYPE_ABS := R_ARM_JUMP_SLOT|R_ARM_GLOB_DAT|R_ARM_ABS32
 include $(srctree)/lib/vdso/Makefile
 
 # Same as cc-*option, but using CC_COMPAT instead of CC
-ifeq ($(CONFIG_CC_IS_CLANG), y)
+ifeq ($(or $(CONFIG_CC_IS_CLANG),$(LLVM)), 1)
 CC_COMPAT_CLANG_FLAGS := --target=$(notdir $(CROSS_COMPILE_COMPAT:%-=%))
 
 CC_COMPAT ?= $(CC)
