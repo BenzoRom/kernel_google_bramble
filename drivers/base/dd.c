@@ -178,11 +178,6 @@ static void driver_deferred_probe_trigger(void)
 	schedule_work(&deferred_probe_work);
 }
 
-void driver_deferred_probe_flush(void)
-{
-	flush_work(&deferred_probe_work);
-}
-
 /**
  * device_block_probing() - Block/defere device's probes
  *

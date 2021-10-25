@@ -688,6 +688,7 @@ static int dwc3_phy_setup(struct dwc3 *dwc)
 
 static void dwc3_core_exit(struct dwc3 *dwc)
 {
+	dwc3_debugfs_exit(dwc);
 	dwc3_event_buffers_cleanup(dwc);
 
 	usb_phy_shutdown(dwc->usb2_phy);
@@ -917,6 +918,7 @@ int dwc3_core_init(struct dwc3 *dwc)
 
 	dwc3_cache_hwparams(dwc);
 	dwc3_check_params(dwc);
+	dwc3_debugfs_init(dwc);
 	ret = dwc3_get_dr_mode(dwc);
 	if (ret) {
 		ret = -EINVAL;
@@ -1604,7 +1606,6 @@ skip_clk_reset:
 	count++;
 
 	pm_runtime_allow(dev);
-	dwc3_debugfs_init(dwc);
 	return 0;
 
 err3:
@@ -1631,8 +1632,8 @@ static int dwc3_remove(struct platform_device *pdev)
 {
 	struct dwc3	*dwc = platform_get_drvdata(pdev);
 
-	dwc3_debugfs_exit(dwc);
 	dwc3_gadget_exit(dwc);
+	dwc3_debugfs_exit(dwc);
 	pm_runtime_allow(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 
